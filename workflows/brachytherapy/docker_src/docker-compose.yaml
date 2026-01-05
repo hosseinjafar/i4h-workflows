@@ -115,6 +115,42 @@ services:
     entrypoint: ["/bin/bash"]
     command: ["/app/Software/TG43_Dose_Calculation_Standalone/run_api.sh"]
 
+  I4H-BrachyUtils:
+    build:
+      context: ../
+      dockerfile: docker_src/Dockerfile
+      ssh:
+        - default
+      args:
+        - HOST_HOME=${HOST_HOME}
+    image: i4h-brachyutils
+    container_name: I4H-BrachyUtils
+    user: "0:0" #"${UID}:${GID}"
+    working_dir: /app
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
+    environment:
+      - HOST_HOME=${HOST_HOME}
+      - DEBIAN_FRONTEND=noninteractive
+      - QT_QPA_PLATFORM=offscreen
+      - DISPLAY=${DISPLAY} # for access to graphical server
+    volumes:
+      - ${HOST_HOME}/Software/brachyutils:/app/Software/brachyutils
+      - ${HOST_HOME}:/home/ubuntu/YourLocalHome
+      - /tmp/.X11-unix:/tmp/.X11-unix # for access to graphical server
+    expose:
+      - "8000"
+    networks:
+      net_brachyutils:
+        ipv4_address: 192.168.1.10
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
 networks:
   net_brachyutils:
     driver: bridge
