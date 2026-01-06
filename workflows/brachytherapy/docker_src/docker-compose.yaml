@@ -119,8 +119,8 @@ services:
     build:
       context: ../
       dockerfile: docker_src/Dockerfile
-      ssh:
-        - default
+      # ssh:
+      #   - default
       args:
         - HOST_HOME=${HOST_HOME}
     image: i4h-brachyutils
